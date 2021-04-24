@@ -48,6 +48,8 @@ Route::middleware('auth:api')->group( function () {
 
 	Route::post('assignroletouser/{user}', 'API\PermissionController@assign_role_to_user');
 
+	Route::get('get-specefic-role/{id}', 'API\PermissionController@getrole');
+
 
 	Route::post('edit-role-name/{id}', 'API\PermissionController@update');//modifier le nom d'un role
 
@@ -55,5 +57,7 @@ Route::middleware('auth:api')->group( function () {
 	Route::put('edit-role/{id}', 'API\PermissionController@editRole');
 
 	Route::delete('delete-role/{id}', 'API\PermissionController@destroy');
+	Route::delete('delete-permission/{id}', 'API\PermissionController@destroyPermission');
+
 });
 

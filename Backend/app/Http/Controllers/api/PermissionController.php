@@ -76,6 +76,15 @@ class PermissionController extends Controller {
         return response()->json(User::with('roles','permissions')->get(),200);
     }
     
+    public function getrole($id){
+        $role=Role::find($id);
+        if(is_null($role)){
+            return response()->json(['error','Role Not Found'],404);
+        }
+        return response()->json($role::find($id),201);
+
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -107,12 +116,16 @@ class PermissionController extends Controller {
             'permission_id' => 'required|exists:permissions,id'
         ]);
         if($validator->fails()){
-            return response()->json(['error' => $validator->errors()], 401);
+           // return response()->json(['error' => $validator->errors()], 401);
+           return response(['error' => 'permission name is required'], 401);
+
         }
         $permission = Permission:: find($request['permission_id'])->firstOrFail();
 
         if($role->givePermissionTo($permission)){
-            return response()->json(['success' => $role], $this-> successStatus);
+         //   return response()->json(['success' => $role], $this-> successStatus);
+         return response(['data'=>'permission given successfuly']);
+
         }
     }
 
@@ -192,15 +205,22 @@ public function updatepermissions(Request $request, $id)
 
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'required',
-           // 'permission' => 'required',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:roles',
         ]);
+        
+        if($validator->fails()){
+            //response()->json(['error'=>$validator->errors()], 401);
+           return response(['error'=>'role name is required and unique'],401);
+   
+       }
 
         $role=Role::find($id);
 
         if(is_null($role)){
             return response()->json(['message','role Not Found'],404);
+           //return response(['error'=>'role name is required and unique'],401);
+
         }
 
         //$role = Role::find($id);
@@ -212,6 +232,17 @@ public function updatepermissions(Request $request, $id)
 
 
         return response()->json(['success' => $role], $this-> successStatus);
+    }
+
+    public function destroyPermission($id)
+    {
+        $permission=Permission::find($id);
+
+        if(is_null($permission)){
+            return response()->json(['error','permission Not Found'],404);
+        }
+        DB::table("permissions")->where('id',$id)->delete();
+        return response(['data'=>'deleted seccessfuly']);
     }
 
 
