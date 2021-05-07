@@ -49,4 +49,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->notify(new PasswordResetNotification($token));
     }
+
+
+    public function mouvement_comptables()
+    {
+        return $this->hasMany(Dictionary::class);
+    }
 }
